@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  rabbit:
+    build:
+      context: .
+      dockerfile: Dockerfile-rabbit
+    container_name: rabbit
+    ports:
+      - 61613:61613
+      - 15672:15672

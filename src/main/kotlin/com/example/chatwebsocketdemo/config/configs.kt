@@ -20,7 +20,14 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
             setApplicationDestinationPrefixes("/app")
 
             // again, /topic seems to be industry standard
-            enableSimpleBroker("/topic")
+            // enableSimpleBroker("/topic") ...for in-memory broker
+
+            // to use rabbit
+            enableStompBrokerRelay("/topic")
+                    .setRelayHost("localhost")
+                    .setRelayPort(61613)
+                    .setClientLogin("guest")
+                    .setClientPasscode("guest")
         }
     }
 }
