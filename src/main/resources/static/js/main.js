@@ -14,12 +14,19 @@ var colors = [
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
+var chatId = null
+
 function connect(event) {
     username = document.querySelector('#name').value.trim();
 
     if (username) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
+
+        // only for proof of concept of having multiple chats with ids
+        fetch('/chat')
+            .then(response => response.json())
+            .then(data => chatId = data.id)
 
         var socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
@@ -29,13 +36,12 @@ function connect(event) {
     event.preventDefault();
 }
 
-
 function onConnected() {
     // Subscribe to the Public Topic
-    stompClient.subscribe('/topic/public', onMessageReceived);
+    stompClient.subscribe('/topic/public/' + chatId, onMessageReceived);
 
     // Tell your username to the server
-    stompClient.send("/app/chat.addUser",
+    stompClient.send("/app/chat/" + chatId + ".addUser",
         {},
         JSON.stringify({sender: username, type: 'JOIN'})
     )
@@ -58,7 +64,7 @@ function sendMessage(event) {
             content: messageInput.value,
             type: 'CHAT'
         };
-        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+        stompClient.send("/app/chat/" + chatId + ".sendMessage", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
     }
     event.preventDefault();
